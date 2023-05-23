@@ -27,7 +27,7 @@ public:
         SetStatusText(_T("wxWidgets にようこそ!"));
 
         Bind(wxEVT_MENU, [](wxCommandEvent& event) {
-            wxLogMessage(_T("wxWidgets からハローワールド!"));
+            wxLogMessage(_T("wxWidgets でハローワールド！"));
         }, ID_Hello);
 
         Bind(wxEVT_MENU, [](wxCommandEvent& event) {
