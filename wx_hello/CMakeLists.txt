@@ -8,7 +8,7 @@ project(wx_hello)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if(WIN32)
+if(WIN32 AND MSVC)
     add_compile_options(-utf-8)
 endif()
 
@@ -19,7 +19,7 @@ add_executable(wx_hello
     src/wx_hello.cpp
 )
 
-if(WIN32)
+if(WIN32 AND MSVC)
     target_link_options(wx_hello PRIVATE /SUBSYSTEM:WINDOWS)
 else()
   if(APPLE)
