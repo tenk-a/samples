@@ -36,9 +36,12 @@ err_*.*
 *.opensdf
 *.opendb
 *.user
-build/*.exe
+build/*
+!build/dummy.txt
 .vscode
 .cmake
 CMakeFiles
 CMakeCache.txt
+CMakeSettings.json
 *.vcxproj.user
+vcpkg_installed
