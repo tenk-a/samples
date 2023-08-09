@@ -1,8 +1,8 @@
 {
   "name": "wx-hello",
   "version": "1.0.0",
+  "builtin-baseline": "afbb37cfd648335fd980f6fb7dbc2d0c84c009cf",
   "dependencies": [
     "wxwidgets"
-  ],
-  "builtin-baseline": "afbb37cfd648335fd980f6fb7dbc2d0c84c009cf"
+  ]
 }
