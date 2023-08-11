@@ -1,7 +1,3 @@
-#
-# wx_hello 用 CMakeLists.txt
-#
-
 # cmake の最低バージョン指定.
 cmake_minimum_required(VERSION 3.18)
 
