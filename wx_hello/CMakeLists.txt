@@ -1,7 +1,7 @@
 # cmake の最低バージョン指定.
 cmake_minimum_required(VERSION 3.18)
 
-# CMAKE_TOOLCHAIN が無指定なら、環境変数 VCPKG_ROOT を元に設定.
+# CMAKE_TOOLCHAIN_FILE が無指定なら、環境変数 VCPKG_ROOT を元に設定.
 if(NOT DEFINED CMAKE_TOOLCHAIN_FILE AND DEFINED ENV{VCPKG_ROOT})
     set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
 endif()
