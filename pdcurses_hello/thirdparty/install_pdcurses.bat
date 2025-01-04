@@ -28,6 +28,7 @@ set Arch=
 set BldTyp=
 set Gen=
 set Opt=
+set CRT=
 set LibPrefix=
 set MAKE_CC=
 set MAKE_CC_D=
@@ -48,6 +49,9 @@ set "MAKE_ARG_D=%MAKE_ARG% DEBUG=Y"
   if /I "%1"=="x64"      set Arch=x64
   if /I "%1"=="Win64"    set Arch=x64
 
+  if /I "%1"=="md"       set CRT=md
+  ::if /I "%1"=="MT"     set CRT=
+
   shift
 goto ARG_LOOP
 :ARG_LOOP_EXIT
@@ -61,7 +65,6 @@ if /I "%Compiler%"=="djgpp"   goto L_DjgppMAKE
 goto ERR_1
 
 :L_NMAKE
-set Compiler=vc
 if not "%ARCH%"=="" goto L_NMAKE_1
 set ARCH=x64
 cl.exe 2>&1 | findstr /C:"x86" >nul
@@ -71,8 +74,10 @@ set ARCH=win32
 set make=nmake
 set Makefile=Makefile.vc
 set ext=lib
+if /I "%CRT%"=="md" goto L_NMAKE_2
 set MAKE_CC="CC=cl -nologo -MT"
 set MAKE_CC_D="CC=cl -nologo -MTd"
+:L_NMAKE_2
 call :win_compile
 goto END
 
@@ -147,6 +152,7 @@ goto compile
 set WorkDir=wincon
 set LibDir=%Compiler%
 if not "%Arch%"=="" set LibDir=%Compiler%-%Arch%
+if not "%CRT%"==""  set LibDir=%Compiler%-%Arch%-%CRT%
 
 :compile
 set dstdir=%CD%\lib\%LibDir%
