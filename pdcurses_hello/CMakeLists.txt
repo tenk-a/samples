@@ -28,11 +28,16 @@ elseif(TOOLCHAIN_NAME MATCHES "vc")
   set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
 endif()
 
+if(TOOLCHAIN_TARGET_PLATFORM MATCHES "win")
+  list(APPEND SRCS "${THIRDPARTY_DIR}/ms/ActiveCodePageUTF8.manifest")
+endif()
+
 if(TOOLCHAIN_TARGET_PLATFORM MATCHES "win" OR TOOLCHAIN_TARGET_PLATFORM MATCHES "dos")
   list(APPEND LIB_DIRS "${THIRDPARTY_DIR}/lib/${TOOLCHAIN_NAME}")
   list(APPEND INC_DIRS "${THIRDPARTY_DIR}/include")
   list(APPEND LIBS "pdcurses")
   list(APPEND OPTS "-DUSE_PDCURSES")
+  add_compile_options(-D_ANSI)
 endif()
 
 #	#	#	#	#	#	#	#	#	#
