@@ -47,4 +47,4 @@ if(TOOLCHAIN_MSVC_VERSION VERSION_GREATER_EQUAL "19.14.26428.1")
   add_compile_options(/Zc:__cplusplus)
 endif()
 
-set(TOOLCHAIN_DEFAULT_LIBS "kernel32;user32;shell32;advapi32" CACHE STRING "Default Windows libraries")
+set(TOOLCHAIN_ADD_LIBS "kernel32;user32;shell32;advapi32" CACHE STRING "Default Windows libraries")

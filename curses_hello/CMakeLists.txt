@@ -44,7 +44,7 @@ endif()
 # cmake:実行ファイル生成
 add_executable(${PROJECT_NAME}
   ${SRCS}
-  ${TOOLCHAIN_DEFAULT_SOURCES}
+  ${TOOLCHAIN_ADD_SRCS}
 )
 # cmake:インストール先を設定.
 install(TARGETS ${PROJECT_NAME}
@@ -52,21 +52,21 @@ install(TARGETS ${PROJECT_NAME}
 )
 # cmake:コンパイル・オプション設定.
 target_compile_options(${PROJECT_NAME} PRIVATE
-  ${TOOLCHAIN_DEFAULT_OPTIONS}
+  ${TOOLCHAIN_ADD_OPTS}
   ${OPTS}
 )
 # cmake: include ディレクトリ設定.
 target_include_directories(${PROJECT_NAME} PRIVATE
-  ${TOOLCHAIN_DEFAULT_INCLUDE_DIRS}
+  ${TOOLCHAIN_ADD_INCLUDE_DIRS}
   ${INC_DIRS}
 )
 # cmake: ライブラリ・ディレクトリ設定.
 target_link_directories(${PROJECT_NAME} PRIVATE
   ${LIB_DIRS}
-  ${TOOLCHAIN_DEFAULT_LINK_DIRS}
+  ${TOOLCHAIN_ADD_LINK_DIRS}
 )
 # cmake: ライブラリ設定.
 target_link_libraries(${PROJECT_NAME} PRIVATE
   ${LIBS}
-  ${TOOLCHAIN_DEFAULT_LIBS}
+  ${TOOLCHAIN_ADD_LIBS}
 )
