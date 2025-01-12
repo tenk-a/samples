@@ -10,7 +10,7 @@ if [ -z "${Toolchain}" ]; then
       Toolchain=mac
       ;;
     *)
-      Toolchain=unix
+      Toolchain=linux
       ;;
   esac
 fi

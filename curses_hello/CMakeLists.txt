@@ -25,8 +25,8 @@ set(LIB_DIRS )
 set(LIBS )
 
 
-if(TOOLCHAIN_NAME MATCHES "mac" OR TOOLCHAIN_NAME MATCHES "unix")
-  # mac unix(linux) では ncurses を使う.
+if(TOOLCHAIN_NAME MATCHES "mac" OR TOOLCHAIN_NAME MATCHES "linux")
+  # mac linux(unix) では ncurses を使う.
   list(APPEND LIBS "ncurses")
 elseif(TOOLCHAIN_NAME MATCHES "vc")
   # VS で開いた時 hello プロジェクトがカレントになるようにする指定.
