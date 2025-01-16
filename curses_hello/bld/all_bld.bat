@@ -1,0 +1,88 @@
+rem @echo off
+::
+::
+::
+@if not "%1"=="" (
+  @echo:
+  @echo:
+  @echo [[%1]]
+  @echo:
+)
+@if /I "%1"=="BLD_VC_WIN64" goto BLD_VC_WIN64
+@if /I "%1"=="BLD_VC_WIN32" goto BLD_VC_WIN32
+@if /I "%1"=="BLD_VC_ARM64" goto BLD_VC_ARM64
+@if /I "%1"=="BLD_VC_ARM32" goto BLD_VC_ARM32
+@if /I "%1"=="BLD_MSYS64"   goto BLD_MSYS64
+@if /I "%1"=="BLD_MSYS32"   goto BLD_MSYS32
+@if /I "%1"=="BLD_WATCOM"   goto BLD_WATCOM
+@if /I "%1"=="BLD_DJGPP"    goto BLD_DJGPP
+@if /I "%1"=="BLD_BORLAND"  goto BLD_BORLAND
+@if not "%1"=="" goto ERR
+
+:: all build.
+cmd /c all_bld.bat BLD_WATCOM
+cmd /c all_bld.bat BLD_MSYS64
+cmd /c all_bld.bat BLD_MSYS32
+cmd /c all_bld.bat BLD_DJGPP
+cmd /c all_bld.bat BLD_VC_WIN64
+cmd /c all_bld.bat BLD_VC_WIN32
+cmd /c all_bld.bat BLD_VC_ARM64
+cmd /c all_bld.bat BLD_VC_ARM32
+cmd /c all_bld.bat BLD_BORLAND
+goto END
+
+
+:BLD_VC_WIN64
+call setcc.bat vc143 x64
+call bld.bat vc-win64
+call bld.bat vc-win64-md
+goto END
+
+:BLD_VC_WIN32
+call setcc.bat vc143 win32
+call bld.bat vc-win32
+call bld.bat vc-win32-md
+goto END
+
+:BLD_VC_ARM64
+call setcc.bat vc143 arm64
+call bld.bat vc-winarm64
+goto END
+
+:BLD_VC_ARM32
+call setcc.bat vc143 arm
+call bld.bat vc-winarm
+goto END
+
+:BLD_WATCOM
+call setcc.bat watcom
+call bld.bat watcom-win32
+call bld.bat watcom-dos32
+call bld.bat watcom-dos16-s
+goto END
+
+:BLD_MSYS64
+call setcc.bat msys2 x64
+call bld.bat mingw-win64
+goto END
+
+:BLD_MSYS32
+call setcc.bat msys2 win32
+call bld.bat mingw-win32
+goto END
+
+:BLD_DJGPP
+call setcc.bat djgpp
+call bld.bat djgpp-dos32
+goto END
+
+:BLD_BORLAND
+call setcc.bat bcc101
+call bld.bat borland-win32
+goto END
+
+:ERR
+@echo Invalid argument : %1
+goto END
+
+:END

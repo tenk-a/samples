@@ -1,4 +1,4 @@
-// ƒJ[ƒ\ƒ‹ˆÚ“®‚Å‚«‚é Hello world! •\¦. ESC ‚© Q ‚ÅI—¹.
+// ã‚«ãƒ¼ã‚½ãƒ«ç§»å‹•ã§ãã‚‹ Hello world! è¡¨ç¤º. ESC ã‹ Q ã§çµ‚äº†.
 #if defined(USE_PDCURSES)
 #include <curses.h>
 #else
@@ -6,37 +6,37 @@
 #endif
 
 int main(void) {
-    // ‰Šú‰».
-    enum { N = 12};                                     // Hello world! •¶š”.
+    // åˆæœŸåŒ–.
+    enum { N = 12};                                     // Hello world! æ–‡å­—æ•°.
     int  x, y, w, h, count = 0;
-    initscr();                                          // curses:(ƒXƒNƒŠ[ƒ“)‰Šú‰».
-    noecho();                                           // curses:ƒL[“ü—Í‚Å•\¦‚ğs‚í‚È‚¢.
-    cbreak();                                           // curses:“ü—Íƒoƒbƒtƒ@ƒŠƒ“ƒO‚µ‚È‚¢.
-    keypad(stdscr, TRUE);                               // curses:ƒJ[ƒ\ƒ‹ƒL[‚ğ—LŒø‚É‚·‚é.
-    curs_set(0);                                        // curses:ƒJ[ƒ\ƒ‹‚ğ•\¦‚µ‚È‚¢.
-    timeout(50);                                        // curses:50ƒ~ƒŠ•b‚Ågetch‚ğtimeout‚³‚¹‚éw’è.
-    getmaxyx(stdscr, h, w);                             // curses:‰æ–ÊƒTƒCƒYæ“¾.
-    x = (w - N) / 2;                                    // x‰ŠúˆÊ’u:‰æ–Ê’†‰›.
-    y = (h - 1) / 2;                                    // y‰ŠúˆÊ’u:‰æ–Ê’†‰›.
+    initscr();                                          // curses:(ã‚¹ã‚¯ãƒªãƒ¼ãƒ³)åˆæœŸåŒ–.
+    noecho();                                           // curses:ã‚­ãƒ¼å…¥åŠ›ã§è¡¨ç¤ºã‚’è¡Œã‚ãªã„.
+    cbreak();                                           // curses:å…¥åŠ›ãƒãƒƒãƒ•ã‚¡ãƒªãƒ³ã‚°ã—ãªã„.
+    keypad(stdscr, TRUE);                               // curses:ã‚«ãƒ¼ã‚½ãƒ«ã‚­ãƒ¼ã‚’æœ‰åŠ¹ã«ã™ã‚‹.
+    curs_set(0);                                        // curses:ã‚«ãƒ¼ã‚½ãƒ«ã‚’è¡¨ç¤ºã—ãªã„.
+    timeout(50);                                        // curses:50ãƒŸãƒªç§’ã§getchã‚’timeoutã•ã›ã‚‹æŒ‡å®š.
+    getmaxyx(stdscr, h, w);                             // curses:ç”»é¢ã‚µã‚¤ã‚ºå–å¾—.
+    x = (w - N) / 2;                                    // xåˆæœŸä½ç½®:ç”»é¢ä¸­å¤®.
+    y = (h - 1) / 2;                                    // yåˆæœŸä½ç½®:ç”»é¢ä¸­å¤®.
 
-    // 20FPS ƒ‹[ƒv.
+    // 20FPS ãƒ«ãƒ¼ãƒ—.
     for (;;) {
-        int k = getch();                                // curses:1•¶š“ü—Í. 50ƒ~ƒŠ•b‚Åtimeout.
-        if (k == 0x1b || k == 'q' || k == 'Q')          // ESC‚Ü‚½‚Í Q ƒL[‚ÅI—¹.
+        int k = getch();                                // curses:1æ–‡å­—å…¥åŠ›. 50ãƒŸãƒªç§’ã§timeout.
+        if (k == 0x1b || k == 'q' || k == 'Q')          // ESCã¾ãŸã¯ Q ã‚­ãƒ¼ã§çµ‚äº†.
             break;
-        x = x - (k == KEY_LEFT) + (k == KEY_RIGHT);     // ¶‰EƒJ[ƒ\ƒ‹ƒL[‚Å‘Œ¸.
-        y = y - (k == KEY_UP  ) + (k == KEY_DOWN );     // ã‰ºƒJ[ƒ\ƒ‹ƒL[‚Å‘Œ¸.
-        x = (x < 0) ? 0 : (x > w - N) ? (w - N) : x;    // xˆÚ“®”ÍˆÍƒ`ƒFƒbƒN.
-        y = (y < 0) ? 0 : (y > h - 1) ? (h - 1) : y;    // yˆÚ“®”ÍˆÍƒ`ƒFƒbƒN.
+        x = x - (k == KEY_LEFT) + (k == KEY_RIGHT);     // å·¦å³ã‚«ãƒ¼ã‚½ãƒ«ã‚­ãƒ¼ã§å¢—æ¸›.
+        y = y - (k == KEY_UP  ) + (k == KEY_DOWN );     // ä¸Šä¸‹ã‚«ãƒ¼ã‚½ãƒ«ã‚­ãƒ¼ã§å¢—æ¸›.
+        x = (x < 0) ? 0 : (x > w - N) ? (w - N) : x;    // xç§»å‹•ç¯„å›²ãƒã‚§ãƒƒã‚¯.
+        y = (y < 0) ? 0 : (y > h - 1) ? (h - 1) : y;    // yç§»å‹•ç¯„å›²ãƒã‚§ãƒƒã‚¯.
 
-        erase();                                        // curses:‰æ–Êƒoƒbƒtƒ@ ƒNƒŠƒA.
-        move(y, x);                                     // curses:•\¦ˆÊ’uİ’è.
-        if (count & 0x0c)                               // ƒtƒŒ[ƒ€”‚ğ‚İ‚Ä“_–Å‚³‚¹‚é.
-            addstr("Hello world!");                     // curses:Hello world! •\¦.
-        ++count;                                        // ƒtƒŒ[ƒ€ƒJƒEƒ“ƒ^XV.
-        refresh();                                      // curses:‰æ–Êƒoƒbƒtƒ@‚ğÀ‰æ–Ê‚É”½‰f.
+        erase();                                        // curses:ç”»é¢ãƒãƒƒãƒ•ã‚¡ ã‚¯ãƒªã‚¢.
+        move(y, x);                                     // curses:è¡¨ç¤ºä½ç½®è¨­å®š.
+        if (count & 0x0c)                               // ãƒ•ãƒ¬ãƒ¼ãƒ æ•°ã‚’ã¿ã¦ç‚¹æ»…ã•ã›ã‚‹.
+            addstr("Hello world!");                     // curses:Hello world! è¡¨ç¤º.
+        ++count;                                        // ãƒ•ãƒ¬ãƒ¼ãƒ ã‚«ã‚¦ãƒ³ã‚¿æ›´æ–°.
+        refresh();                                      // curses:ç”»é¢ãƒãƒƒãƒ•ã‚¡ã‚’å®Ÿç”»é¢ã«åæ˜ .
     }
-    // I—¹.
-    endwin();                                           // curses I—¹.
+    // çµ‚äº†.
+    endwin();                                           // curses çµ‚äº†.
     return 0;
 }

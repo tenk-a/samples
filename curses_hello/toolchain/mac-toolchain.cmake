@@ -1,5 +1,4 @@
-set(TOOLCHAIN_NAME "mac" CACHE STRING "Toolchain name")
-set(TOOLCHAIN_TARGET_PLATFORM "mac" CACHE STRING "Toolchain Target Platform" FORCE)
+#set(TOOLCHAIN_NAME "mac" CACHE STRING "Toolchain name")
 
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm64")
     set(TOOLCHAIN_ADD_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/thirdparty/include:/opt/homebrew/include" CACHE STRING "Default include directories for the toolchain")

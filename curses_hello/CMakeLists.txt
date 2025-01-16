@@ -24,6 +24,9 @@ set(LIB_DIRS )
 # ライブラリ・ファイル.
 set(LIBS )
 
+# ツールチェイン名.
+get_filename_component(TOOLCHAIN_NAME "${CMAKE_TOOLCHAIN_FILE}" NAME_WE)
+string(REPLACE "-toolchain" "" TOOLCHAIN_NAME "${TOOLCHAIN_NAME}")
 
 if(TOOLCHAIN_NAME MATCHES "mac" OR TOOLCHAIN_NAME MATCHES "linux")
   # mac linux(unix) では ncurses を使う.
@@ -34,7 +37,7 @@ elseif(TOOLCHAIN_NAME MATCHES "vc")
 endif()
 
 # Win / Dos なら PDCurses を使うための設定.
-if(TOOLCHAIN_TARGET_PLATFORM MATCHES "win" OR TOOLCHAIN_TARGET_PLATFORM MATCHES "dos")
+if(TOOLCHAIN_NAME MATCHES "win" OR TOOLCHAIN_NAME MATCHES "dos")
   list(APPEND LIB_DIRS "${THIRDPARTY_DIR}/lib/${TOOLCHAIN_NAME}")
   list(APPEND INC_DIRS "${THIRDPARTY_DIR}/include")
   list(APPEND LIBS "pdcurses")

@@ -1,5 +1,4 @@
-set(TOOLCHAIN_NAME "watcom-dos16-s" CACHE STRING "Toolchain name")
-set(TOOLCHAIN_TARGET_PLATFORM "dos16" CACHE STRING "Toolchain Target Platform" FORCE)
+#set(TOOLCHAIN_NAME "watcom-dos16-s" CACHE STRING "Toolchain name")
 
 set(CMAKE_SYSTEM_NAME "dos")
 set(CMAKE_SYSTEM_PROCESSOR "I86")

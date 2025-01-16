@@ -24,14 +24,15 @@ endif()
 set(TOOLCHAIN_MSVC_VERSION "${CMAKE_MATCH_1}" CACHE STRING "MSVC Compiler Version" FORCE)
 set(TOOLCHAIN_TARGET_ARCH "${CMAKE_MATCH_2}" CACHE STRING "Toolchain Target arch" FORCE)
 
-set(TOOLCHAIN_TARGET_PLATFORM "win64" CACHE STRING "Toolchain target platform" FORCE)
-if("${TOOLCHAIN_TARGET_ARCH}" STREQUAL "x86")
-  set(TOOLCHAIN_TARGET_ARCH "win32" CACHE STRING "Toolchain Target arch" FORCE)
-  set(TOOLCHAIN_TARGET_PLATFORM "win32" CACHE STRING "Toolchain Target Platform" FORCE)
-endif()
+#set(TOOLCHAIN_TARGET_PLATFORM "win64" CACHE STRING "Toolchain target platform" FORCE)
+#if("${TOOLCHAIN_TARGET_ARCH}" STREQUAL "x86")
+#  set(TOOLCHAIN_TARGET_PLATFORM "win32" CACHE STRING "Toolchain Target arch" FORCE)
+#elseif("${TOOLCHAIN_TARGET_ARCH}" STREQUAL "ARM64")
+#  set(TOOLCHAIN_TARGET_PLATFORM "winarm64" CACHE STRING "Toolchain Target arch" FORCE)
+#endif()
+#set(TOOLCHAIN_NAME "vc-${TOOLCHAIN_TARGET_PLATFORM}" CACHE STRING "Toolchain name" FORCE)
 #----------------------------------------------------
 
-set(TOOLCHAIN_NAME "vc-${TOOLCHAIN_TARGET_ARCH}" CACHE STRING "Toolchain name" FORCE)
 
 add_compile_options(/Zc:wchar_t /Zc:forScope)
 

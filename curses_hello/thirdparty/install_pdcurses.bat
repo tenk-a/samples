@@ -4,13 +4,13 @@ rem @echo off
 :: and copy the files to include and lib/TARGET directory
 :: under the thirdparty directory.
 ::  COMPILER ARCH     (Generate)
-::  vc       x64    | vc-x64
+::  vc       win64  | vc-win64
 ::  vc       win32  | vc-win32
-::  mingw    x64    | mingw-x64
+::  mingw    win64  | mingw-win64
 ::  mingw    win32  | mingw-win32
 ::  watcom          | watcom-win32 watcom-dos32 watcom-dos16-(s|c|m|l|h)
 ::  borland         | borland-win32
-::  djgpp           | djgpp  (for dos32)
+::  djgpp    dos32  | djgpp-dos32
 setlocal
 pushd %~dp0
 
@@ -37,27 +37,32 @@ set "MAKE_ARG_D=%MAKE_ARG% DEBUG=Y"
 
 :ARG_LOOP
   if "%1"=="" goto ARG_LOOP_EXIT
+  set arg=%1
 
-  if /I "%1"=="vc"       set Compiler=vc
+  if /I "%arg:~0,2%"=="vc" set "Compiler=%arg%"
   if /I "%1"=="mingw"    set Compiler=mingw
   if /I "%1"=="watcom"   set Compiler=watcom
   if /I "%1"=="borland"  set Compiler=borland
   if /I "%1"=="djgpp"    set Compiler=djgpp
 
   if /I "%1"=="x86"      set Arch=win32
-  if /I "%1"=="Win32"    set Arch=win32
-  if /I "%1"=="x64"      set Arch=x64
-  if /I "%1"=="Win64"    set Arch=x64
+  if /I "%1"=="win32"    set Arch=win32
+  if /I "%1"=="x64"      set Arch=win64
+  if /I "%1"=="win64"    set Arch=win64
+  if /I "%1"=="arm"      set Arch=arm
+  if /I "%1"=="winarm"   set Arch=winarm
+  if /I "%1"=="arm64"    set Arch=arm64
+  if /I "%1"=="winarm64" set Arch=winarm64
 
   if /I "%1"=="md"       set CRT=md
-  ::if /I "%1"=="MT"     set CRT=
+  ::if /I "%1"=="mt"     set CRT=
 
   shift
 goto ARG_LOOP
 :ARG_LOOP_EXIT
 
 if "%Compiler%"=="" goto ERR_1
-if /I "%Compiler%"=="vc"      goto L_NMAKE
+if /I "%Compiler:~0,2%"=="vc" goto L_NMAKE
 if /I "%Compiler%"=="mingw"   goto L_MingwMAKE
 if /I "%Compiler%"=="watcom"  goto L_WMAKE
 if /I "%Compiler%"=="borland" goto L_TMAKE
@@ -65,21 +70,29 @@ if /I "%Compiler%"=="djgpp"   goto L_DjgppMAKE
 goto ERR_1
 
 :L_NMAKE
-if not "%ARCH%"=="" goto L_NMAKE_1
-set ARCH=x64
-cl.exe 2>&1 | findstr /C:"x86" >nul
-if %ERRORLEVEL% neq 0 goto L_NAME_1
-set ARCH=win32
-:L_NMAKE_1
+if not "%Arch%"=="" goto L_NMAKE_ARCH_END
+if "%Arch%"=="" call :ChkVcArch x64   win64
+if "%Arch%"=="" call :ChkVcArch x86   win32
+if "%Arch%"=="" call :ChkVcArch ARM64 winarm64
+if "%Arch%"=="" call :ChkVcArch ARM   winarm
+:L_NMAKE_ARCH_END
+if /I "%Arch%"=="arm64" set Arch=winarm64
+if /I "%Arch%"=="arm"   set Arch=winarm
 set make=nmake
 set Makefile=Makefile.vc
 set ext=lib
-if /I "%CRT%"=="md" goto L_NMAKE_2
+if /I "%CRT%"=="md" goto L_NMAKE_SKIP_CC
 set MAKE_CC="CC=cl -nologo -MT"
 set MAKE_CC_D="CC=cl -nologo -MTd"
-:L_NMAKE_2
+:L_NMAKE_SKIP_CC
 call :win_compile
 goto END
+
+:ChkVcArch
+cl.exe 2>&1 | findstr /C:"%1" >nul
+if %ERRORLEVEL% equ 0 set Arch=%2
+:L_ChkVcArch_End
+exit /b 0
 
 :L_MingwMAKE
 set Compiler=mingw
@@ -95,8 +108,8 @@ set Compiler=djgpp
 set make=make
 set Makefile=Makefile
 set ext=a
-set LibDir=%Compiler%
 set LibPrefix=lib
+set LibDir=%Compiler%-dos32
 set "WorkDir=dos"
 set "MAKE_ARG="
 set "MAKE_ARG_D=DEBUG_=Y"
@@ -161,15 +174,15 @@ set dstdirD=%CD%\lib\debug\%LibDir%
 if not exist %dstdirD% mkdir %dstdirD%
 
 pushd PDCurses\%WorkDir%
-del *.obj *.o *.lib *.a *.pdb *.map *.ilb *.bak *.err
+del *.obj *.o *.lib *.a *.pdb *.map *.ilb *.bak *.err *.lib
 
 %make% -f %Makefile% %MAKE_ARG% %MAKE_CC%
 copy /b pdcurses.%ext% %dstdir%\%LibPrefix%pdcurses.%ext%
-del *.obj *.o *.lib *.a *.pdb *.map *.ilb *.bak *.err
+del *.obj *.o *.lib *.a *.pdb *.map *.ilb *.bak *.err *.lib
 
 %make% -f %Makefile% %MAKE_ARG_D% %MAKE_CC_D%
 copy /b pdcurses.%ext% %dstdirD%\%LibPrefix%pdcurses.%ext%
-del *.obj *.o *.lib *.a *.pdb *.map *.ilb *.bak *.err
+del *.obj *.o *.lib *.a *.pdb *.map *.ilb *.bak *.err *.lib
 popd
 exit /b 0
 
