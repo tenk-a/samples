@@ -1,6 +1,7 @@
-rem @echo off
+@echo off
 ::
-::
+:: コンパイラを設定してhelloのビルドを行う.
+:: 引数無しだとvc,msys,watcom,djgpp,blorlandをビルド.
 ::
 @if not "%1"=="" (
   @echo:
@@ -8,27 +9,27 @@ rem @echo off
   @echo [[%1]]
   @echo:
 )
-@if /I "%1"=="BLD_VC_WIN64" goto BLD_VC_WIN64
-@if /I "%1"=="BLD_VC_WIN32" goto BLD_VC_WIN32
-@if /I "%1"=="BLD_VC_ARM64" goto BLD_VC_ARM64
-@if /I "%1"=="BLD_VC_ARM32" goto BLD_VC_ARM32
-@if /I "%1"=="BLD_MSYS64"   goto BLD_MSYS64
-@if /I "%1"=="BLD_MSYS32"   goto BLD_MSYS32
-@if /I "%1"=="BLD_WATCOM"   goto BLD_WATCOM
-@if /I "%1"=="BLD_DJGPP"    goto BLD_DJGPP
-@if /I "%1"=="BLD_BORLAND"  goto BLD_BORLAND
+@if /I "%1"=="VC_WIN64" goto BLD_VC_WIN64
+@if /I "%1"=="VC_WIN32" goto BLD_VC_WIN32
+@if /I "%1"=="VC_ARM64" goto BLD_VC_ARM64
+@if /I "%1"=="VC_ARM32" goto BLD_VC_ARM32
+@if /I "%1"=="MSYS64"   goto BLD_MSYS64
+@if /I "%1"=="MSYS32"   goto BLD_MSYS32
+@if /I "%1"=="WATCOM"   goto BLD_WATCOM
+@if /I "%1"=="DJGPP"    goto BLD_DJGPP
+@if /I "%1"=="BORLAND"  goto BLD_BORLAND
 @if not "%1"=="" goto ERR
 
 :: all build.
-cmd /c all_bld.bat BLD_WATCOM
-cmd /c all_bld.bat BLD_MSYS64
-cmd /c all_bld.bat BLD_MSYS32
-cmd /c all_bld.bat BLD_DJGPP
-cmd /c all_bld.bat BLD_VC_WIN64
-cmd /c all_bld.bat BLD_VC_WIN32
-cmd /c all_bld.bat BLD_VC_ARM64
-cmd /c all_bld.bat BLD_VC_ARM32
-cmd /c all_bld.bat BLD_BORLAND
+cmd /c all_bld.bat WATCOM
+cmd /c all_bld.bat MSYS64
+cmd /c all_bld.bat MSYS32
+cmd /c all_bld.bat DJGPP
+cmd /c all_bld.bat VC_WIN64
+cmd /c all_bld.bat VC_WIN32
+cmd /c all_bld.bat VC_ARM64
+cmd /c all_bld.bat VC_ARM32
+cmd /c all_bld.bat BORLAND
 goto END
 
 

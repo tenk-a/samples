@@ -8,8 +8,8 @@ goto L_START
 :L_HELP
 @echo USAGE: setcc [COMPILER] [win32/x64]
 @echo   COMPILER:
-@echo       vc142,vc141,vc140,vc120,vc110,vc100,vc90,vc80,vc71
-@echo       msys2,msys2clang,mingw,watcom,dmc,oragnec,djgpp
+@echo       vc143,vc142,vc141,vc140,vc120,vc110,vc100,vc90,vc80,vc71
+@echo       msys2,msys2clang,mingw,watcom,dmc,orangec,djgpp
 goto L_END
 
 :L_START
