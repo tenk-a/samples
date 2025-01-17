@@ -52,3 +52,5 @@ bld/*
 !bld/*.sh
 !bld/*.cmake
 bin
+toolchain/vc??-*-toolchain.cmake
+toolchain/vc???-*-toolchain.cmake
