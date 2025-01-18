@@ -1,5 +1,4 @@
 # Toolchain configuration for VC
-
 # -----------------------------------------------
 # Run cl to get the version and platform name.
 
@@ -33,12 +32,13 @@ set(TOOLCHAIN_TARGET_ARCH "${CMAKE_MATCH_2}" CACHE STRING "Toolchain Target arch
 #set(TOOLCHAIN_NAME "vc-${TOOLCHAIN_TARGET_PLATFORM}" CACHE STRING "Toolchain name" FORCE)
 #----------------------------------------------------
 
-
-add_compile_options(/Zc:wchar_t /Zc:forScope)
-
+# Use utf8 source.
 if(TOOLCHAIN_MSVC_VERSION VERSION_GREATER_EQUAL "19.0.24215.1")
   add_compile_options(/utf-8)
 endif()
+
+# Use the c++ standard instead of the MS dialect.
+add_compile_options(/Zc:wchar_t /Zc:forScope)
 
 if(TOOLCHAIN_MSVC_VERSION VERSION_GREATER_EQUAL "19.0.24215.1")
   add_compile_options(/Zc:rvalueCast)
@@ -48,4 +48,5 @@ if(TOOLCHAIN_MSVC_VERSION VERSION_GREATER_EQUAL "19.14.26428.1")
   add_compile_options(/Zc:__cplusplus)
 endif()
 
+# win32 libraries.
 set(TOOLCHAIN_ADD_LIBS "kernel32;user32;shell32;advapi32" CACHE STRING "Default Windows libraries")
