@@ -81,10 +81,14 @@ if /I "%Arch%"=="arm"   set Arch=winarm
 set make=nmake
 set Makefile=Makefile.vc
 set ext=lib
-if /I "%CRT%"=="md" goto L_NMAKE_SKIP_CC
+if /I "%CRT%"=="md" goto L_NMAKE_VC_MD
 set MAKE_CC="CC=cl -nologo -MT"
 set MAKE_CC_D="CC=cl -nologo -MTd"
-:L_NMAKE_SKIP_CC
+goto L_NMAKE_SKIP_VC
+:L_NMAKE_VC_MD
+set MAKE_CC="CC=cl -nologo -MD"
+set MAKE_CC_D="CC=cl -nologo -MDd"
+:L_NMAKE_SKIP_VC
 call :win_compile
 goto END
 
@@ -174,15 +178,15 @@ set dstdirD=%CD%\lib\debug\%LibDir%
 if not exist %dstdirD% mkdir %dstdirD%
 
 pushd PDCurses\%WorkDir%
-del *.obj *.o *.lib *.a *.pdb *.map *.ilb *.bak *.err *.lib
+del *.obj *.o *.lib *.a *.pdb *.map *.ilb *.bak *.err
 
 %make% -f %Makefile% %MAKE_ARG% %MAKE_CC%
 copy /b pdcurses.%ext% %dstdir%\%LibPrefix%pdcurses.%ext%
-del *.obj *.o *.lib *.a *.pdb *.map *.ilb *.bak *.err *.lib
+del *.obj *.o *.lib *.a *.pdb *.map *.ilb *.bak *.err
 
 %make% -f %Makefile% %MAKE_ARG_D% %MAKE_CC_D%
 copy /b pdcurses.%ext% %dstdirD%\%LibPrefix%pdcurses.%ext%
-del *.obj *.o *.lib *.a *.pdb *.map *.ilb *.bak *.err *.lib
+del *.obj *.o *.lib *.a *.pdb *.map *.ilb *.bak *.err
 popd
 exit /b 0
 
