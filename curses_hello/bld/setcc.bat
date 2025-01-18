@@ -102,7 +102,6 @@ rem ## vc ######################################
 :L_VC141
     set VcVer=vc141
     set VcYear=2017
-    goto L_VC14x_J1
 
 :L_VC14x_J1
     set "VsRoot=%ProgramFiles(x86)%\Microsoft Visual Studio\%VcYear%"
@@ -323,6 +322,7 @@ rem ## vc ######################################
     goto :L_END
 
 :L_DJGPP
+    set COMPILER=djgpp
     if /i "%MINGW_DIR%"=="" set "MINGW_DIR=c:\MinGW"
     if /i "%DJGPP_DIR%"=="" set "DJGPP_DIR=c:\djgpp"
     set "PATH=%DJGPP_DIR%\bin;%DJGPP_DIR%\i586-pc-msdosdjgpp\bin;%MINGW_DIR%\bin;%MINGW_DIR%\msys\1.0\bin;%setcc_base_path%"
