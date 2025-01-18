@@ -23,16 +23,18 @@
 @if not "%1"=="" goto ERR
 
 :: all build.
+chcp 932
+cmd /c all_bld.bat BORLAND
+cmd /c all_bld.bat VC90_WIN32
+chcp 65001
 cmd /c all_bld.bat WATCOM
 cmd /c all_bld.bat MSYS64
 cmd /c all_bld.bat MSYS32
 cmd /c all_bld.bat DJGPP
-cmd /c all_bld.bat BORLAND
 cmd /c all_bld.bat VC_WIN64
 cmd /c all_bld.bat VC_WIN32
 cmd /c all_bld.bat VC_ARM64
 cmd /c all_bld.bat VC_ARM32
-cmd /c all_bld.bat VC90_WIN32
 goto END
 
 
