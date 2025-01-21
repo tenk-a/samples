@@ -19,7 +19,7 @@ int main(void) {
     x = (w - N) / 2;                                    // x初期位置:画面中央.
     y = (h - 1) / 2;                                    // y初期位置:画面中央.
 
-    // 20FPS ループ.
+    // 20FPS風ループ.
     for (;;) {
         int k = getch();                                // curses:1文字入力. 50ミリ秒でtimeout.
         if (k == 0x1b || k == 'q' || k == 'Q')          // ESCまたは Q キーで終了.
