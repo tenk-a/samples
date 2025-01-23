@@ -39,11 +39,11 @@ set "MAKE_ARG_D=%MAKE_ARG% DEBUG=Y"
   if "%1"=="" goto ARG_LOOP_EXIT
   set arg=%1
 
-  if /I "%arg:~0,2%"=="vc" set "Compiler=%arg%"
-  if /I "%1"=="mingw"    set Compiler=mingw
-  if /I "%1"=="watcom"   set Compiler=watcom
-  if /I "%1"=="borland"  set Compiler=borland
-  if /I "%1"=="djgpp"    set Compiler=djgpp
+  if /I "%arg:~0,2%"=="vc"      set "Compiler=%arg%"
+  if /I "%arg:~0,6%"=="watcom"  set "Compiler=%arg%"
+  if /I "%arg:~0,5%"=="mingw"   set "Compiler=%arg%"
+  if /I "%arg:~0,5%"=="djgpp"   set "Compiler=%arg%"
+  if /I "%arg:~0,7%"=="borland" set "Compiler=%arg%"
 
   if /I "%1"=="x86"      set Arch=win32
   if /I "%1"=="win32"    set Arch=win32
@@ -62,11 +62,11 @@ goto ARG_LOOP
 :ARG_LOOP_EXIT
 
 if "%Compiler%"=="" goto ERR_1
-if /I "%Compiler:~0,2%"=="vc" goto L_NMAKE
-if /I "%Compiler%"=="mingw"   goto L_MingwMAKE
-if /I "%Compiler%"=="watcom"  goto L_WMAKE
-if /I "%Compiler%"=="borland" goto L_TMAKE
-if /I "%Compiler%"=="djgpp"   goto L_DjgppMAKE
+if /I "%Compiler:~0,2%"=="vc"      goto L_NMAKE
+if /I "%Compiler:~0,6%"=="watcom"  goto L_WMAKE
+if /I "%Compiler:~0,5%"=="mingw"   goto L_MingwMAKE
+if /I "%Compiler:~0,5%"=="djgpp"   goto L_DjgppMAKE
+if /I "%Compiler:~0,7%"=="borland" goto L_TMAKE
 goto ERR_1
 
 :L_NMAKE
@@ -99,7 +99,6 @@ if %ERRORLEVEL% equ 0 set Arch=%2
 exit /b 0
 
 :L_MingwMAKE
-set Compiler=mingw
 set make=make
 set Makefile=Makefile
 set ext=a
@@ -108,7 +107,6 @@ call :win_compile
 goto END
 
 :L_DjgppMAKE
-set Compiler=djgpp
 set make=make
 set Makefile=Makefile
 set ext=a
@@ -121,7 +119,6 @@ call :compile
 goto END
 
 :L_WMAKE
-set Compiler=watcom
 set make=wmake
 set Makefile=Makefile.wcc
 set ext=lib
@@ -136,7 +133,6 @@ call :dos16compile h
 goto END
 
 :L_TMAKE
-set Compiler=borland
 set Arch=win32
 set make=tmake
 set Makefile=Makefile.bcc
