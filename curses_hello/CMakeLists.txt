@@ -28,7 +28,7 @@ set(LIBS )
 get_filename_component(TOOLCHAIN_NAME "${CMAKE_TOOLCHAIN_FILE}" NAME_WE)
 string(REPLACE "-toolchain" "" TOOLCHAIN_NAME "${TOOLCHAIN_NAME}")
 
-if(TOOLCHAIN_NAME MATCHES "mac" OR TOOLCHAIN_NAME MATCHES "linux")
+if(APPLE OR TOOLCHAIN_NAME MATCHES "mac" OR TOOLCHAIN_NAME MATCHES "linux")
   # mac linux(unix) では ncurses を使う.
   list(APPEND LIBS "ncurses")
 elseif(TOOLCHAIN_NAME MATCHES "vc")
