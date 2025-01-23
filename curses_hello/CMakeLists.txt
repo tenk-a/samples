@@ -28,20 +28,21 @@ set(LIBS )
 get_filename_component(TOOLCHAIN_NAME "${CMAKE_TOOLCHAIN_FILE}" NAME_WE)
 string(REPLACE "-toolchain" "" TOOLCHAIN_NAME "${TOOLCHAIN_NAME}")
 
+# コンパイラ・OS環境別の設定.
 if(APPLE OR TOOLCHAIN_NAME MATCHES "mac" OR TOOLCHAIN_NAME MATCHES "linux")
   # mac linux(unix) では ncurses を使う.
   list(APPEND LIBS "ncurses")
-elseif(TOOLCHAIN_NAME MATCHES "vc")
-  # VS で開いた時 hello プロジェクトがカレントになるようにする指定.
-  set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
-endif()
-
-# Win / Dos なら PDCurses を使うための設定.
-if(TOOLCHAIN_NAME MATCHES "win" OR TOOLCHAIN_NAME MATCHES "dos")
+elseif(TOOLCHAIN_NAME MATCHES "win" OR TOOLCHAIN_NAME MATCHES "dos")
+  # Win / Dos なら PDCurses を使うための設定.
   list(APPEND LIB_DIRS "${THIRDPARTY_DIR}/lib/${TOOLCHAIN_NAME}")
   list(APPEND INC_DIRS "${THIRDPARTY_DIR}/include")
   list(APPEND LIBS "pdcurses")
   list(APPEND OPTS "-DUSE_PDCURSES")
+
+  # VS で開いた時 hello プロジェクトがカレントになるようにする指定.
+  if(TOOLCHAIN_NAME MATCHES "vc")
+    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
+  endif()
 endif()
 
 # cmake:実行ファイル生成
