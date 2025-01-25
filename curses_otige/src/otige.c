@@ -1,14 +1,22 @@
+#include "cons.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
-#include <stdint.h>
-#include "cons.h"
+#if __STDC_VERSION__ >= 199901L || __cplusplus >= 201103L
+ #include <stdint.h>
+ #if !defined(__cplusplus)
+  #include <stdbool.h>
+ #endif
+#else
+typedef unsigned char   uint8_t;
+typedef unsigned short  uint16_t;
+typedef unsigned char   bool;
+#endif
 
 //  -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -
 //  etc
+
 typedef unsigned int    uint_t;
-typedef cons_bool_t     bool_t;
 typedef cons_pos_t      pos_t;
 
 #define FIELD_W         10
@@ -69,7 +77,7 @@ static void field_clear(void) {
 }
 
 /// ピースを置けるか?
-static bool_t field_canPlacePiece(Piece const* p) {
+static bool field_canPlacePiece(Piece const* p) {
     uint16_t ptn = piece_shapes[p->shape][p->r];
     pos_t    x0  = p->x, y0 = p->y;
     uint8_t  i;
@@ -141,7 +149,7 @@ static uint8_t      s_step        = 0;      ///< そのステートでのstep.
 
 /// タイトル.
 /// @return  0:終了 1:継続.
-static bool_t gameTitle(void) {
+static bool gameTitle(void) {
     cons_key_t  k = cons_key();
     if (s_fall_time <= cons_timer()) { // 時間でピース変更.
         s_fall_time = s_fall_time + 12 * GAME_MIN_SPEED;
@@ -157,7 +165,7 @@ static bool_t gameTitle(void) {
 
 /// ゲーム開始.
 /// @return  0:終了 1:継続.
-static bool_t gameStart(void) {
+static bool gameStart(void) {
     ++s_step;
     if (s_step == 1) {
         field_clear();
@@ -177,7 +185,7 @@ static bool_t gameStart(void) {
 
 /// ゲームプレイ.
 /// @return  0:終了 1:継続.
-static bool_t gamePlay(void) {
+static bool gamePlay(void) {
     cons_timer_t cur_time = cons_timer();
     cons_key_t   k        = cons_key();
     // 入力処理.

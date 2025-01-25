@@ -19,13 +19,13 @@
 @if /I "%1"=="WATCOM"   goto BLD_WATCOM
 @if /I "%1"=="DJGPP"    goto BLD_DJGPP
 @if /I "%1"=="BORLAND"  goto BLD_BORLAND
-@if /I "%1"=="VC110_WIN32" goto BLD_VC110_WIN32
+@if /I "%1"=="VC90_WIN32" goto BLD_VC90_WIN32
 @if not "%1"=="" goto ERR
 
 :: all build.
 chcp 932
 cmd /c all_bld.bat BORLAND
-cmd /c all_bld.bat VC110_WIN32
+cmd /c all_bld.bat VC90_WIN32
 chcp 65001
 cmd /c all_bld.bat WATCOM
 cmd /c all_bld.bat MSYS64
@@ -60,13 +60,13 @@ call setcc.bat vc143 arm
 call bld.bat vc-winarm
 goto END
 
-:BLD_VC110_WIN32
-copy ..\toolchain\vc-win32-toolchain.cmake    ..\toolchain\vc110-win32-toolchain.cmake
-copy ..\toolchain\vc-win32-md-toolchain.cmake ..\toolchain\vc110-win32-md-toolchain.cmake
-call setcc.bat vc110 win32
-call bld.bat vc110-win32
-call bld.bat vc110-win32-md
-del ..\toolchain\vc110-*.cmake
+:BLD_VC90_WIN32
+copy ..\toolchain\vc-win32-toolchain.cmake    ..\toolchain\vc90-win32-toolchain.cmake
+copy ..\toolchain\vc-win32-md-toolchain.cmake ..\toolchain\vc90-win32-md-toolchain.cmake
+call setcc.bat vc90 win32
+call bld.bat vc90-win32
+call bld.bat vc90-win32-md
+del ..\toolchain\vc90-*.cmake
 goto END
 
 :BLD_WATCOM

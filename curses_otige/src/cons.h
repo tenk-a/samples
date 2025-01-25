@@ -9,12 +9,12 @@
 #include <ncurses.h>
 #define cons_clear()            erase()
 #endif
+#include <time.h>
 
 typedef unsigned long           cons_timer_t;
-typedef uint8_t                 cons_bool_t;
 typedef int                     cons_pos_t;
-typedef uint8_t                 cons_col_t;
-typedef uint16_t                cons_key_t;
+typedef unsigned char           cons_col_t;
+typedef unsigned short          cons_key_t;
 
 #define CONS_TIMER_BASE         60U         // 1000
 #define CONS_MSEC_TO_TIMER(ms)  (((ms) * CONS_TIMER_BASE) / 1000U)
@@ -55,7 +55,7 @@ static cons_timer_t _cons_getTimer(void) {
 }
 
 /// cons 初期化.
-cons_bool_t  cons_init(void) {
+int cons_init(void) {
     initscr();
     noecho();
     cbreak();
