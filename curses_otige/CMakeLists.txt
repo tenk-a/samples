@@ -34,7 +34,7 @@ if(APPLE OR TOOLCHAIN_NAME MATCHES "mac" OR TOOLCHAIN_NAME MATCHES "linux")
   # mac linux(unix) では ncurses を使う.
   list(APPEND LIBS "ncurses")
 elseif(TOOLCHAIN_NAME MATCHES "win" OR TOOLCHAIN_NAME MATCHES "dos")
-# Win / Dos なら PDCurses を使うための設定.
+  # Win / Dos なら PDCurses を使うための設定.
   list(APPEND LIB_DIRS "${THIRDPARTY_DIR}/lib/${TOOLCHAIN_NAME}")
   list(APPEND INC_DIRS "${THIRDPARTY_DIR}/include")
   list(APPEND LIBS "pdcurses")
