@@ -40,7 +40,7 @@ elseif(TOOLCHAIN_NAME MATCHES "win" OR TOOLCHAIN_NAME MATCHES "dos")
   list(APPEND LIBS "pdcurses")
   list(APPEND OPTS "-DUSE_PDCURSES")
 
-  # VS で開いた時 hello プロジェクトがカレントになるようにする指定.
+  # VS で開いた時、project() 設定したプロジェクトがカレントになるようにする指定.
   if(TOOLCHAIN_NAME MATCHES "vc")
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
   endif()
