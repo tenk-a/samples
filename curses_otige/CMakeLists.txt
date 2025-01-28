@@ -28,6 +28,9 @@ set(LIBS )
 # ツールチェイン名.
 get_filename_component(TOOLCHAIN_NAME "${CMAKE_TOOLCHAIN_FILE}" NAME_WE)
 string(REPLACE "-toolchain" "" TOOLCHAIN_NAME "${TOOLCHAIN_NAME}")
+if(APPLE AND NOT TOOLCHAIN_NAME)
+  set(TOOLCHAIN_NAME "mac")
+endif()
 
 # コンパイラ・OS環境別の設定.
 if(APPLE OR TOOLCHAIN_NAME MATCHES "mac" OR TOOLCHAIN_NAME MATCHES "linux")
