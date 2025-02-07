@@ -11,13 +11,13 @@
 #endif
 #include <time.h>
 
-typedef unsigned long           cons_timer_t;
+typedef unsigned long           cons_clock_t;
 typedef int                     cons_pos_t;
 typedef unsigned char           cons_col_t;
 typedef unsigned short          cons_key_t;
 
-#define CONS_TIMER_BASE         60U         // 1000
-#define CONS_MSEC_TO_TIMER(ms)  (((ms) * CONS_TIMER_BASE) / 1000U)
+#define CONS_CLOCK_BASE         1000
+#define CONS_MSEC_TO_CLOCK(ms)  (((ms) * CONS_CLOCK_BASE) / 1000U)
 
 #define CONS_KEY_ERR            0xffff
 #define CONS_KEY_DOWN           KEY_DOWN
@@ -33,24 +33,24 @@ typedef unsigned short          cons_key_t;
 #define cons_screenWidth()      _cons_screen_width
 #define cons_screenHeight()     _cons_screen_height
 #define cons_key()              _cons_cur_key
-#define cons_timer()            _cons_cur_timer
+#define cons_clock()            _cons_cur_clock
 #define cons_xycprintf(x,y,co,...) do { attron(COLOR_PAIR(co)); mvprintw((y),(x),__VA_ARGS__); } while (0)
 
 static cons_pos_t               _cons_screen_width;
 static cons_pos_t               _cons_screen_height;
 static cons_key_t               _cons_cur_key;
-static cons_timer_t             _cons_cur_timer;
+static cons_clock_t             _cons_cur_clock;
 
 /// ミリ秒取得.
-static cons_timer_t _cons_getTimer(void) {
+static cons_clock_t _cons_getTimer(void) {
  #if defined __DJGPP__
-    return (cons_timer_t)(uclock() * CONS_TIMER_BASE / UCLOCKS_PER_SEC);
+    return (cons_clock_t)(uclock() * CONS_CLOCK_BASE / UCLOCKS_PER_SEC);
  #elif defined(__DOS__) || defined(_WIN32)
-    return (cons_timer_t)(clock() * CONS_TIMER_BASE / CLOCKS_PER_SEC);
+    return (cons_clock_t)(clock() * CONS_CLOCK_BASE / CLOCKS_PER_SEC);
  #else
     struct timeval tv = {0,0};
     gettimeofday(&tv, NULL);
-    return (cons_timer_t)((tv.tv_sec * 1000U + (tv.tv_usec / 1000U)) * CONS_TIMER_BASE / 1000U);
+    return (cons_clock_t)((tv.tv_sec * 1000U + (tv.tv_usec / 1000U)) * CONS_CLOCK_BASE / 1000U);
  #endif
 }
 
@@ -89,7 +89,7 @@ void cons_term(void) {
 
 /// 毎フレームの最初に行う処理.
 void cons_updateBegin(void) {
-    _cons_cur_timer = (cons_timer_t)(_cons_getTimer());
+    _cons_cur_clock = (cons_clock_t)(_cons_getTimer());
     _cons_cur_key   = (cons_key_t)getch();
     getmaxyx(stdscr, _cons_screen_height, _cons_screen_width);
 }

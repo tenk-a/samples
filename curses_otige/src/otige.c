@@ -137,9 +137,9 @@ static uint8_t filed_clearLines(void) {
 //  -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -
 //  GAME
 
-#define GAME_MIN_SPEED   CONS_MSEC_TO_TIMER(50) ///< 最小速度(ミリ秒)
+#define GAME_MIN_SPEED   CONS_MSEC_TO_CLOCK(50) ///< 最小速度(ミリ秒)
 
-static cons_timer_t s_fall_time   = 0;      ///< 次の落下予定時間.
+static cons_clock_t s_fall_time   = 0;      ///< 次の落下予定時間.
 static uint_t       s_lines       = 0;      ///< クリアしたライン数.
 static uint_t       s_level       = 1;      ///< レベル.
 static uint_t       s_score       = 0;      ///< スコア.
@@ -151,7 +151,7 @@ static uint8_t      s_step        = 0;      ///< そのステートでのstep.
 /// @return  0:終了 1:継続.
 static bool gameTitle(void) {
     cons_key_t  k = cons_key();
-    if (s_fall_time <= cons_timer()) { // 時間でピース変更.
+    if (s_fall_time <= cons_clock()) { // 時間でピース変更.
         s_fall_time = s_fall_time + 12 * GAME_MIN_SPEED;
         if (++s_piece_cur.shape > 6) {
             s_piece_cur.shape = 0;
@@ -177,7 +177,7 @@ static bool gameStart(void) {
         s_score     = 0;
     } else if (s_step > 13) {
         s_step      = 0;
-        s_fall_time = cons_timer() + s_speed;
+        s_fall_time = cons_clock() + s_speed;
         return 0;
     }
     return 1;
@@ -186,7 +186,7 @@ static bool gameStart(void) {
 /// ゲームプレイ.
 /// @return  0:終了 1:継続.
 static bool gamePlay(void) {
-    cons_timer_t cur_time = cons_timer();
+    cons_clock_t cur_time = cons_clock();
     cons_key_t   k        = cons_key();
     // 入力処理.
     if (k != CONS_KEY_ERR) {
@@ -306,7 +306,7 @@ static void draw_piece(pos_t x, pos_t y, uint8_t shape, uint8_t rot) {
 static void draw_gameTitle(void) {
     pos_t   w  = cons_screenWidth();
     pos_t   y  = (cons_screenHeight() - 18) >> 1;
-    uint8_t co = (cons_timer() & 0x30) ? COL_L_DEFAULT : COL_DEFAULT;
+    uint8_t co = (cons_clock() & 0x30) ? COL_L_DEFAULT : COL_DEFAULT;
     cons_xycprintf((w-11)>>1, y+2, COL_TITLE, "O T I - G E");
     draw_piece((w-FIELD_SCALE_X(4))>>1, y+7, s_piece_cur.shape, s_piece_cur.r);
     cons_xycprintf((w-11)>>1, y+14, co, "HIT ANY KEY");
@@ -379,7 +379,7 @@ static void draw_gameOver(void) {
     pos_t   w  = 20, h = 10;
     pos_t   x  = (sc_w - w) >> 1;
     pos_t   y  = (sc_h - h) >> 1;
-    uint8_t co = (cons_timer() & 0x30) ? COL_L_DEFAULT : COL_DEFAULT;
+    uint8_t co = (cons_clock() & 0x30) ? COL_L_DEFAULT : COL_DEFAULT;
     uint8_t i;
 
     draw_gamePlay();
