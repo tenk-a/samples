@@ -32,7 +32,7 @@ if(APPLE AND NOT TOOLCHAIN_NAME)
 endif()
 
 # コンパイラ・OS環境別の設定.
-if(TOOLCHAIN_NAME MATCHES "mac" OR TOOLCHAIN_NAME MATCHES "linux")
+if(APPLE OR TOOLCHAIN_NAME MATCHES "mac" OR TOOLCHAIN_NAME MATCHES "linux")
   # mac linux(unix) では ncurses を使う.
   list(APPEND LIBS "ncurses")
 elseif(TOOLCHAIN_NAME MATCHES "win" OR TOOLCHAIN_NAME MATCHES "dos")

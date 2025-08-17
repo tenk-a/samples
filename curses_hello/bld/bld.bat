@@ -12,6 +12,7 @@ pushd %~dp0
 cd ..
 
 set Toolchain=%1
+set OPT0=%2
 set GENE=
 set COMPILER=
 set ARCH=
@@ -27,12 +28,14 @@ for /f "tokens=1,2,3 delims=-" %%a in ("%Toolchain%") do (
     set "CRT=%%c"
 )
 
-if not exist thirdparty\lib\%Toolchain% call thirdparty\install_pdcurses.bat %COMPILER% %ARCH% %CRT%
+if exist thirdparty\lib\%Toolchain%\*pdcurses.* goto SKIP_PDCURSES
+call thirdparty\install_pdcurses.bat %COMPILER% %ARCH% %CRT%
+:SKIP_PDCURSES
 
 set OPT1=-DCMAKE_BUILD_TYPE=Release
 set OPT2=
 
-if /I "%COMPILER%"=="watcom"  set GENE=-G "Watcom WMake"
+if /I "%COMPILER:~0,6%"=="watcom" set GENE=-G "Watcom WMake"
 if /I "%COMPILER%"=="djgpp"   set GENE=-G "MinGW Makefiles"
 if /I "%COMPILER%"=="mingw"   set GENE=-G "MinGW Makefiles"
 if /I "%COMPILER%"=="borland" set GENE=-G "Borland Makefiles"
@@ -60,13 +63,16 @@ set "ARCH1= ARM"
 set "ARCH2=-A arm"
 goto SKIP_ARCH_E
 :SKIP_ARCH_E
-@if /I not "%PATH:Microsoft Visual Studio 12.0=%"=="%PATH%" set GENE=-G "Visual Studio 12 2013%ARCH1%"
+rem @if /I not "%PATH:Microsoft Visual Studio 9.0=%"=="%PATH%" set GENE=-G "Visual Studio 9 2008%ARCH1%"
+rem @if /I not "%PATH:Microsoft Visual Studio 10.0=%"=="%PATH%" set GENE=-G "Visual Studio 10 2010%ARCH1%"
+rem @if /I not "%PATH:Microsoft Visual Studio 11.0=%"=="%PATH%" set GENE=-G "Visual Studio 11 2012%ARCH1%"
+rem @if /I not "%PATH:Microsoft Visual Studio 12.0=%"=="%PATH%" set GENE=-G "Visual Studio 12 2013%ARCH1%"
 @if /I not "%PATH:Microsoft Visual Studio 14.0=%"=="%PATH%" set GENE=-G "Visual Studio 14 2015%ARCH1%"
 @if /I not "%PATH:Microsoft Visual Studio\2017=%"=="%PATH%" set GENE=-G "Visual Studio 15 2017%ARCH1%"
 @if /I not "%PATH:Microsoft Visual Studio\2019=%"=="%PATH%" set GENE=-G "Visual Studio 16 2019" %ARCH2%
 @if /I not "%PATH:Microsoft Visual Studio\2022=%"=="%PATH%" set GENE=-G "Visual Studio 17 2022" %ARCH2%
 :L_CMAKE
-cmake %GENE% -DCMAKE_TOOLCHAIN_FILE=toolchain/%Toolchain%-toolchain.cmake %OPT1% -B bld/%Toolchain% .
+cmake %GENE% -DCMAKE_TOOLCHAIN_FILE=toolchain/%Toolchain%-toolchain.cmake %OPT0% %OPT1% -B bld/%Toolchain% .
 cmake --build bld/%Toolchain% %OPT2%
 cmake --install bld/%Toolchain%
 
