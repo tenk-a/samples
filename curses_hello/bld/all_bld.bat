@@ -26,14 +26,14 @@
 :: all build.
 chcp 65001
 
-cmd /c all_bld.bat WATCOM
-cmd /c all_bld.bat MSYS64
-cmd /c all_bld.bat MSYS32
-cmd /c all_bld.bat DJGPP
 cmd /c all_bld.bat VC-WIN64
 cmd /c all_bld.bat VC-WIN32
 cmd /c all_bld.bat VC-ARM64
 cmd /c all_bld.bat VC-ARM32
+cmd /c all_bld.bat MSYS64
+cmd /c all_bld.bat MSYS32
+cmd /c all_bld.bat WATCOM
+cmd /c all_bld.bat DJGPP
 cmd /c all_bld.bat linux
 
 cmd /c all_bld.bat VCVER-WIN32 140
@@ -44,7 +44,6 @@ chcp 932
 cmd /c all_bld.bat VCVER-WIN32 120
 cmd /c all_bld.bat VCVER-WIN32 110
 cmd /c all_bld.bat VCVER-WIN32 90
-cmd /c all_bld.bat VCVER-WIN32 80
 cmd /c all_bld.bat BORLAND
 
 chcp 65001
@@ -111,7 +110,7 @@ call bld.bat borland-win32
 goto END
 
 :LINUX
-wsl -d Ubuntu-22.04 bash -c "~/proj/cons/bld/bld.sh linux"
+wsl -d Ubuntu-22.04 bash -c "~/proj/samples/curses_hello/bld/bld.sh linux"
 goto END
 
 :ERR
