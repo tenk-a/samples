@@ -82,6 +82,12 @@ void myclock_sleep(myclock_t count) {
  #if defined(_WIN32)
     count = count * 1000 / MYCLOCK_PER_SEC;
     if (count) Sleep(count);
+ #elif defined(_POSIX_C_SOURCE) && (_POSIX_C_SOURCE >= 199309L) || defined(__APPLE__)
+    struct timespec ts;
+    ts.tv_sec  = count / MYCLOCK_PER_SEC;
+    count %= MYCLOCK_PER_SEC;
+    ts.tv_nsec = (long)(count * (1000000000LL / MYCLOCK_PER_SEC));
+    nanosleep(&ts, &ts);
  #elif !defined(__DOS__)
     count = count * 1000000LL / MYCLOCK_PER_SEC;
     if (count) usleep(count);

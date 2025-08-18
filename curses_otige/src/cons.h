@@ -6,23 +6,23 @@
  #include <curses.h>
  typedef unsigned __int64       cons_clock_t;
  #define cons_clear()           clear()
- #define CONS_CLOCK_BASE        1000000LL   // マイクロ秒.
+ #define CONS_CLOCK_PER_SEC     1000000LL   // マイクロ秒.
 #elif defined(__DOS__)
  #include <curses.h>
  #define cons_clear()           clear()
  #if defined(__DJGPP__)
   typedef unsigned long long    cons_clock_t;
-  #define CONS_CLOCK_BASE       1000000LL   // マイクロ秒.
+  #define CONS_CLOCK_PER_SEC    1000000LL   // マイクロ秒.
  #else
   typedef unsigned long         cons_clock_t;
-  #define CONS_CLOCK_BASE       1000        // ミリ秒.
+  #define CONS_CLOCK_PER_SEC    1000        // ミリ秒.
  #endif
 #else   // linux,unix
  #include <sys/time.h>
  #include <ncurses.h>
  typedef unsigned long long     cons_clock_t;
  #define cons_clear()           erase()
- #define CONS_CLOCK_BASE        1000000LL   // マイクロ秒.
+ #define CONS_CLOCK_PER_SEC     1000000LL   // マイクロ秒.
 #endif
 #include <time.h>
 #define CONS_FPS                60
@@ -31,7 +31,7 @@ typedef int                     cons_pos_t;
 typedef unsigned char           cons_col_t;
 typedef unsigned short          cons_key_t;
 
-#define CONS_MSEC_TO_CLOCK(ms)  (((ms) * CONS_CLOCK_BASE) / 1000U)
+#define CONS_MSEC_TO_CLOCK(ms)  (((ms) * CONS_CLOCK_PER_SEC) / 1000U)
 
 #define CONS_KEY_ERR            0xffff
 #define CONS_KEY_DOWN           KEY_DOWN
@@ -64,28 +64,34 @@ static cons_clock_t _cons_getClock(void) {
     if (!per_sec)
         QueryPerformanceFrequency((LARGE_INTEGER*)&per_sec);
     QueryPerformanceCounter((LARGE_INTEGER*)&count);
-    return count * CONS_CLOCK_BASE / per_sec;
+    return count * CONS_CLOCK_PER_SEC / per_sec;
  #elif defined(CLOCK_MONOTONIC)
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC, &ts);
     return (cons_clock_t)ts.tv_sec * 1000000ULL + (ts.tv_nsec / 1000ULL);
  #elif defined(__DJGPP__)
-    return (cons_clock_t)(uclock() * CONS_CLOCK_BASE / UCLOCKS_PER_SEC);
+    return (cons_clock_t)(uclock() * CONS_CLOCK_PER_SEC / UCLOCKS_PER_SEC);
  #elif defined(__DOS__)
-    return (cons_clock_t)(clock() * CONS_CLOCK_BASE / CLOCKS_PER_SEC);
+    return (cons_clock_t)(clock() * CONS_CLOCK_PER_SEC / CLOCKS_PER_SEC);
  #else
     struct timeval tv = {0,0};
     gettimeofday(&tv, NULL);
-    return (cons_clock_t)((tv.tv_sec * 1000000ULL + tv.tv_usec) * CONS_CLOCK_BASE / 1000000ULL);
+    return (cons_clock_t)((tv.tv_sec * 1000000ULL + tv.tv_usec) * CONS_CLOCK_PER_SEC / 1000000ULL);
  #endif
 }
 
 // sleep.
 static void cons_clock_sleep(cons_clock_t count) {
  #if defined(_WIN32)
-    Sleep(count * 1000 / CONS_CLOCK_BASE);
+    Sleep(count * 1000 / CONS_CLOCK_PER_SEC);
+ #elif defined(_POSIX_C_SOURCE) && (_POSIX_C_SOURCE >= 199309L) || defined(__APPLE__)
+    struct timespec ts;
+    ts.tv_sec  = count / CONS_CLOCK_PER_SEC;
+    count %= CONS_CLOCK_PER_SEC;
+    ts.tv_nsec = (long)(count * (1000000000LL / CONS_CLOCK_PER_SEC));
+    nanosleep(&ts, &ts);
  #elif !defined(__DOS__)
-    usleep(count * 1000000LL / CONS_CLOCK_BASE);
+    usleep(count * 1000000LL / CONS_CLOCK_PER_SEC);
  #endif
 }
 
@@ -125,6 +131,8 @@ void cons_term(void) {
 
 /// 毎フレームの最初に行う処理.
 void cons_updateBegin(void) {
+    _cons_cur_clock = _cons_getClock();
+    _cons_fps_count = _cons_cur_clock * CONS_FPS / CONS_CLOCK_PER_SEC;
     _cons_cur_key   = (cons_key_t)getch();
     getmaxyx(stdscr, _cons_screen_height, _cons_screen_width);
 }
@@ -132,7 +140,7 @@ void cons_updateBegin(void) {
 /// 毎フレームの最後に行う処理. だいたい 60 FPS 間隔になるように待つ.
 void cons_updateEnd(void) {
     cons_clock_t now  = _cons_getClock();
-    cons_clock_t next = (_cons_fps_count + 1) * CONS_CLOCK_BASE / CONS_FPS;
+    cons_clock_t next = (_cons_fps_count + 1) * CONS_CLOCK_PER_SEC / CONS_FPS;
     if (now < next) {
         cons_clock_t dif = next - now;
         cons_clock_sleep(dif);
@@ -140,7 +148,5 @@ void cons_updateEnd(void) {
             now = _cons_getClock();
         } while (now < next);
     }
-    _cons_cur_clock = _cons_getClock();
-    _cons_fps_count = _cons_cur_clock * CONS_FPS / CONS_CLOCK_BASE;
     refresh();
 }
