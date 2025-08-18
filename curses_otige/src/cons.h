@@ -1,22 +1,36 @@
 // CONS: ncurses, pdcurses を用いたコンソール描画.
 // 注意! このファイルはヘッダでなく 単なる include ファイル.
 
-#if defined(USE_PDCURSES)
-#include <curses.h>
-#define cons_clear()            clear()
-#else
-#include <sys/time.h>
-#include <ncurses.h>
-#define cons_clear()            erase()
+#if defined(_WIN32)
+ #include <windows.h>
+ #include <curses.h>
+ typedef unsigned __int64       cons_clock_t;
+ #define cons_clear()           clear()
+ #define CONS_CLOCK_BASE        1000000LL   // マイクロ秒.
+#elif defined(__DOS__)
+ #include <curses.h>
+ #define cons_clear()           clear()
+ #if defined(__DJGPP__)
+  typedef unsigned long long    cons_clock_t;
+  #define CONS_CLOCK_BASE       1000000LL   // マイクロ秒.
+ #else
+  typedef unsigned long         cons_clock_t;
+  #define CONS_CLOCK_BASE       1000        // ミリ秒.
+ #endif
+#else   // linux,unix
+ #include <sys/time.h>
+ #include <ncurses.h>
+ typedef unsigned long long     cons_clock_t;
+ #define cons_clear()           erase()
+ #define CONS_CLOCK_BASE        1000000LL   // マイクロ秒.
 #endif
 #include <time.h>
+#define CONS_FPS                60
 
-typedef unsigned long           cons_clock_t;
 typedef int                     cons_pos_t;
 typedef unsigned char           cons_col_t;
 typedef unsigned short          cons_key_t;
 
-#define CONS_CLOCK_BASE         1000
 #define CONS_MSEC_TO_CLOCK(ms)  (((ms) * CONS_CLOCK_BASE) / 1000U)
 
 #define CONS_KEY_ERR            0xffff
@@ -40,17 +54,38 @@ static cons_pos_t               _cons_screen_width;
 static cons_pos_t               _cons_screen_height;
 static cons_key_t               _cons_cur_key;
 static cons_clock_t             _cons_cur_clock;
+static cons_clock_t             _cons_fps_count;
 
-/// ミリ秒取得.
-static cons_clock_t _cons_getTimer(void) {
- #if defined __DJGPP__
+/// マイクロ秒 or ミリ秒取得.
+static cons_clock_t _cons_getClock(void) {
+ #if defined(_WIN32)
+    static unsigned __int64 per_sec = 0;
+    unsigned __int64        count   = 0;
+    if (!per_sec)
+        QueryPerformanceFrequency((LARGE_INTEGER*)&per_sec);
+    QueryPerformanceCounter((LARGE_INTEGER*)&count);
+    return count * CONS_CLOCK_BASE / per_sec;
+ #elif defined(CLOCK_MONOTONIC)
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return (cons_clock_t)ts.tv_sec * 1000000ULL + (ts.tv_nsec / 1000ULL);
+ #elif defined(__DJGPP__)
     return (cons_clock_t)(uclock() * CONS_CLOCK_BASE / UCLOCKS_PER_SEC);
- #elif defined(__DOS__) || defined(_WIN32)
+ #elif defined(__DOS__)
     return (cons_clock_t)(clock() * CONS_CLOCK_BASE / CLOCKS_PER_SEC);
  #else
     struct timeval tv = {0,0};
     gettimeofday(&tv, NULL);
-    return (cons_clock_t)((tv.tv_sec * 1000U + (tv.tv_usec / 1000U)) * CONS_CLOCK_BASE / 1000U);
+    return (cons_clock_t)((tv.tv_sec * 1000000ULL + tv.tv_usec) * CONS_CLOCK_BASE / 1000000ULL);
+ #endif
+}
+
+// sleep.
+static void cons_clock_sleep(cons_clock_t count) {
+ #if defined(_WIN32)
+    Sleep(count * 1000 / CONS_CLOCK_BASE);
+ #elif !defined(__DOS__)
+    usleep(count * 1000000LL / CONS_CLOCK_BASE);
  #endif
 }
 
@@ -78,7 +113,8 @@ int cons_init(void) {
         }
     }
     getmaxyx(stdscr, _cons_screen_height, _cons_screen_width);
-    timeout(50);    // getch のタイムアウト時間(50ミリ秒)
+    nodelay(stdscr, TRUE);    // getch での待ちを無しにする.
+    _cons_cur_clock = _cons_getClock();
     return 1;
 }
 
@@ -89,12 +125,22 @@ void cons_term(void) {
 
 /// 毎フレームの最初に行う処理.
 void cons_updateBegin(void) {
-    _cons_cur_clock = (cons_clock_t)(_cons_getTimer());
     _cons_cur_key   = (cons_key_t)getch();
     getmaxyx(stdscr, _cons_screen_height, _cons_screen_width);
 }
 
-/// 毎フレームの最後に行う処理.
+/// 毎フレームの最後に行う処理. だいたい 60 FPS 間隔になるように待つ.
 void cons_updateEnd(void) {
+    cons_clock_t now  = _cons_getClock();
+    cons_clock_t next = (_cons_fps_count + 1) * CONS_CLOCK_BASE / CONS_FPS;
+    if (now < next) {
+        cons_clock_t dif = next - now;
+        cons_clock_sleep(dif);
+        do {
+            now = _cons_getClock();
+        } while (now < next);
+    }
+    _cons_cur_clock = _cons_getClock();
+    _cons_fps_count = _cons_cur_clock * CONS_FPS / CONS_CLOCK_BASE;
     refresh();
 }

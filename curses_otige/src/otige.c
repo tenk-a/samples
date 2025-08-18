@@ -27,16 +27,20 @@ typedef cons_pos_t      pos_t;
 
 #define PIECE_SHAPE_NUM   7     ///< ピース形状の種類数.
 
-/// ピース形状 （7種類 × 4回転） src/tool/gen_shape.cpp
-static uint16_t const piece_shapes[PIECE_SHAPE_NUM][4] = {
-    //  0       90     180     270
-    { 0x0660, 0x0660, 0x0660, 0x0660, },    // ■ O
-    { 0x0c60, 0x2640, 0x0c60, 0x2640, },    // z  Z
-    { 0x06c0, 0x4620, 0x06c0, 0x4620, },    // s  S
-    { 0x8e00, 0x6440, 0x0e20, 0x44c0, },    // ┛ J
-    { 0x2e00, 0x4460, 0x0e80, 0xc440, },    // ┗ L
-    { 0x04e0, 0x4640, 0x0e40, 0x4c40, },    // ┻ T
-    { 0x0f00, 0x2222, 0x0f00, 0x4444, },    // ┃ I
+typedef struct Cell {
+    uint8_t     x;
+    uint8_t     y;
+} Cell;
+
+/// ピース形状 （7種類 × 4回転).
+static Cell const g_piece_cells[PIECE_SHAPE_NUM][4][4] = {
+    { {{1,1},{2,1},{1,2},{2,2}},{{1,1},{2,1},{1,2},{2,2}},{{1,1},{2,1},{1,2},{2,2}},{{1,1},{2,1},{1,2},{2,2}}, },   // ■ O
+    { {{0,1},{1,1},{1,2},{2,2}},{{2,0},{1,1},{2,1},{1,2}},{{0,1},{1,1},{1,2},{2,2}},{{2,0},{1,1},{2,1},{1,2}}, },   // z Z
+    { {{1,1},{2,1},{0,2},{1,2}},{{1,0},{1,1},{2,1},{2,2}},{{1,1},{2,1},{0,2},{1,2}},{{1,0},{1,1},{2,1},{2,2}}, },   // s S
+    { {{0,0},{0,1},{1,1},{2,1}},{{1,0},{2,0},{1,1},{1,2}},{{0,1},{1,1},{2,1},{2,2}},{{1,0},{1,1},{0,2},{1,2}}, },   // ┛ J
+    { {{2,0},{0,1},{1,1},{2,1}},{{1,0},{1,1},{1,2},{2,2}},{{0,1},{1,1},{2,1},{0,2}},{{0,0},{1,0},{1,1},{1,2}}, },   // ┗ L
+    { {{1,1},{0,2},{1,2},{2,2}},{{1,0},{1,1},{2,1},{1,2}},{{0,1},{1,1},{2,1},{1,2}},{{1,0},{0,1},{1,1},{1,2}}, },   // ┻ T
+    { {{0,1},{1,1},{2,1},{3,1}},{{2,0},{2,1},{2,2},{2,3}},{{0,1},{1,1},{2,1},{3,1}},{{1,0},{1,1},{1,2},{1,3}}, },   // ┃ I
 };
 
 typedef struct Piece {
@@ -78,35 +82,35 @@ static void field_clear(void) {
 
 /// ピースを置けるか?
 static bool field_canPlacePiece(Piece const* p) {
-    uint16_t ptn = piece_shapes[p->shape][p->r];
-    pos_t    x0  = p->x, y0 = p->y;
-    uint8_t  i;
-    for (i = 0; i < 16; ++i) {
-        pos_t y = y0 + (i >> 2);
-        if (y >= 0) {
-            field_t const* field = s_field[y];
-            if (ptn & (0x8000 >> i)) {
-                pos_t x = x0 + (i &  3);
-                if (x < 0 || x >= FIELD_W || y >= FIELD_H || field[x])
-                    return 0;
-            }
-        }
+    Cell const* cell = g_piece_cells[p->shape][p->r];
+    pos_t       x0   = p->x;
+    pos_t       y0   = p->y;
+    unsigned    i;
+    for (i = 0; i < 4; ++i) {
+        pos_t x = x0 + cell[i].x;
+        pos_t y = y0 + cell[i].y;
+        if (y < 0)
+            continue;
+        if (x < 0 || x >= FIELD_W || y >= FIELD_H)
+            return 0;
+        if (s_field[y][x])
+            return 0;
     }
     return 1;
 }
 
 /// ピースの固定.
 static void field_placePiece(Piece const* p) {
-    uint16_t ptn = piece_shapes[p->shape][p->r];
-    pos_t    x0  = p->x, y0 = p->y;
-    uint8_t  i;
-    for (i = 0; i < 16; ++i) {
-        if (ptn & (0x8000 >> i)) {
-            pos_t x = x0 + (i &  3);
-            pos_t y = y0 + (i >> 2);
-            if (y >= 0 && y < FIELD_H && x >= 0 && x < FIELD_W)
-                s_field[y][x] = p->shape + 1;
-        }
+    Cell const* cell = g_piece_cells[p->shape][p->r];
+    pos_t       x0   = p->x;
+    pos_t       y0   = p->y;
+    uint8_t     v    = (uint8_t)(p->shape + 1);
+    unsigned    i;
+    for (i = 0; i < 4; ++i) {
+        pos_t x = x0 + cell[i].x;
+        pos_t y = y0 + cell[i].y;
+        if (y >= 0 && y < FIELD_H && x >= 0 && x < FIELD_W)
+            s_field[y][x] = v;
     }
 }
 
@@ -137,22 +141,23 @@ static uint8_t filed_clearLines(void) {
 //  -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -
 //  GAME
 
-#define GAME_MIN_SPEED   CONS_MSEC_TO_CLOCK(50) ///< 最小速度(ミリ秒)
+#define GAME_MIN_SPEED  CONS_MSEC_TO_CLOCK(50)  ///< 最小速度(ミリ秒)
 
-static cons_clock_t s_fall_time   = 0;      ///< 次の落下予定時間.
-static uint_t       s_lines       = 0;      ///< クリアしたライン数.
-static uint_t       s_level       = 1;      ///< レベル.
-static uint_t       s_score       = 0;      ///< スコア.
-static uint_t       s_high_score  = 0;      ///< ハイスコア.
-static uint_t       s_speed       = 0;      ///< 落下速度.
-static uint8_t      s_step        = 0;      ///< そのステートでのstep.
+static cons_clock_t     s_fall_time   = 0;      ///< 次の落下予定時間.
+static uint_t           s_lines       = 0;      ///< クリアしたライン数.
+static uint_t           s_level       = 1;      ///< レベル.
+static uint_t           s_score       = 0;      ///< スコア.
+static uint_t           s_high_score  = 0;      ///< ハイスコア.
+static uint_t           s_speed       = 0;      ///< 落下速度.
+static uint8_t          s_step        = 0;      ///< そのステートでのstep.
 
 /// タイトル.
 /// @return  0:終了 1:継続.
 static bool gameTitle(void) {
-    cons_key_t  k = cons_key();
-    if (s_fall_time <= cons_clock()) { // 時間でピース変更.
-        s_fall_time = s_fall_time + 12 * GAME_MIN_SPEED;
+    cons_key_t      k = cons_key();
+    cons_clock_t    t = cons_clock();
+    if (s_fall_time <= t) { // 時間でピース変更.
+        s_fall_time = t + 12 * GAME_MIN_SPEED;
         if (++s_piece_cur.shape > 6) {
             s_piece_cur.shape = 0;
             s_piece_cur.r     = (s_piece_cur.r + 1) & 3;
@@ -277,7 +282,7 @@ static uint8_t gameOver(void) {
 #define FIELD_SCALE_X(x)            ((x)  * 2)
 
 /// ピースの１キャラ描画.
-static void draw_shapeCh(pos_t x, pos_t y, field_t fld, uint8_t type) {
+static void draw_shapeCh(pos_t x, pos_t y, field_t fld) {
     uint8_t co;
     if (fld) {
         uint8_t  shape = fld - 1;
@@ -290,15 +295,13 @@ static void draw_shapeCh(pos_t x, pos_t y, field_t fld, uint8_t type) {
 
 /// ピース描画.
 static void draw_piece(pos_t x, pos_t y, uint8_t shape, uint8_t rot) {
-    uint16_t ptn  = piece_shapes[shape][rot];
-    uint8_t  i;
-    for (i = 0; i < 16; ++i) {
-        if (ptn & (0x8000 >> i)) {
-            pos_t x2 = x + FIELD_SCALE_X(i & 3);
-            pos_t y2 = y + (i >> 2);
-            if (y2 >= 0)
-                draw_shapeCh(x2, y2, shape+1, 2);
-        }
+    Cell const* cell = g_piece_cells[shape][rot];
+    unsigned    i;
+    for (i = 0; i < 4; ++i) {
+        pos_t x2 = x + FIELD_SCALE_X(cell[i].x);
+        pos_t y2 = y + cell[i].y;
+        if (y2 >= 0)
+            draw_shapeCh(x2, y2, shape+1);
     }
 }
 
@@ -338,7 +341,7 @@ static void draw_gamePlay(void) {
         cons_xycprintf(ofs_x-FIELD_SCALE_X(1), ofs_y+y, COL_WALL, "||");
         for (x = 0; x < FIELD_W; ++x) {
             field_t fld = field_get(x,y);
-            draw_shapeCh(ofs_x+FIELD_SCALE_X(x), ofs_y+y, fld, 1);
+            draw_shapeCh(ofs_x+FIELD_SCALE_X(x), ofs_y+y, fld);
         }
         cons_xycprintf(ofs_x+FIELD_SCALE_X(FIELD_W), ofs_y+y, COL_WALL, "||");
     }
