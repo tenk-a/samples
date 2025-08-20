@@ -141,12 +141,10 @@ void cons_updateBegin(void) {
 void cons_updateEnd(void) {
     cons_clock_t now  = _cons_getClock();
     cons_clock_t next = (_cons_fps_count + 1) * CONS_CLOCK_PER_SEC / CONS_FPS;
-    if (now < next) {
-        cons_clock_t dif = next - now;
-        cons_clock_sleep(dif);
-        do {
-            now = _cons_getClock();
-        } while (now < next);
-    }
+    cons_clock_t dif  = (next > now) ? next - now : 0;
+    cons_clock_sleep(dif);
+    do {
+        now = _cons_getClock();
+    } while (now < next);
     refresh();
 }
